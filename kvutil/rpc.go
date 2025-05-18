@@ -9,7 +9,7 @@ import (
 const RpcTimeout = 300 * time.Millisecond
 
 type ClientEnd struct {
-	Address string // TCP address like "localhost:8001"
+	Address string
 }
 
 func (ce *ClientEnd) Call(serviceMethod string, args interface{}, reply interface{}) bool {

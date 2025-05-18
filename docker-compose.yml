@@ -1,0 +1,175 @@
+version: "3.8"
+
+services:
+  # ── Shard Controller ──────────────────────────────────────────────────────
+  shardctrler-0:
+    build:
+      context: .
+    image: raftkv-shardctrler
+    container_name: shardctrler-0
+    command:
+      - "/app/shardctrlernode"
+      - "--me=0"
+      - "--raft-peers=shardctrler-0:8000,shardctrler-1:8000,shardctrler-2:8000"
+      - "--data=/data"
+    ports:
+      - "9000:8000"
+    volumes:
+      - ./data/controller0:/data
+
+  shardctrler-1:
+    build:
+      context: .
+    image: raftkv-shardctrler
+    container_name: shardctrler-1
+    command:
+      - "/app/shardctrlernode"
+      - "--me=1"
+      - "--raft-peers=shardctrler-0:8000,shardctrler-1:8000,shardctrler-2:8000"
+      - "--data=/data"
+    ports:
+      - "9001:8000"
+    volumes:
+      - ./data/controller1:/data
+
+  shardctrler-2:
+    build:
+      context: .
+    image: raftkv-shardctrler
+    container_name: shardctrler-2
+    command:
+      - "/app/shardctrlernode"
+      - "--me=2"
+      - "--raft-peers=shardctrler-0:8000,shardctrler-1:8000,shardctrler-2:8000"
+      - "--data=/data"
+    ports:
+      - "9002:8000"
+    volumes:
+      - ./data/controller2:/data
+  # ── ShardKV Group 1 ───────────────────────────────────────────────────────
+  shardkv1-0:
+    build: .
+    image: raftkv-shardkv
+    container_name: shardkv1-0
+    command:
+      - "/app/shardkvnode"
+      - "--gid=1"
+      - "--me=0"
+      - "--raft-peers=shardkv1-0:8000,shardkv1-1:8000,shardkv1-2:8000"
+      - "--ctrl-peers=shardctrler-0:8000,shardctrler-1:8000,shardctrler-2:8000"
+      - "--data=/data"
+    ports:
+      - "8100:8000"
+    volumes:
+      - ./data/kv1-0:/data
+
+  shardkv1-1:
+    build: .
+    image: raftkv-shardkv
+    container_name: shardkv1-1
+    command:
+      - "/app/shardkvnode"
+      - "--gid=1"
+      - "--me=1"
+      - "--raft-peers=shardkv1-0:8000,shardkv1-1:8000,shardkv1-2:8000"
+      - "--ctrl-peers=shardctrler-0:8000,shardctrler-1:8000,shardctrler-2:8000"
+      - "--data=/data"
+    ports:
+      - "8101:8000"
+    volumes:
+      - ./data/kv1-1:/data
+
+  shardkv1-2:
+    build: .
+    image: raftkv-shardkv
+    container_name: shardkv1-2
+    command:
+      - "/app/shardkvnode"
+      - "--gid=1"
+      - "--me=2"
+      - "--raft-peers=shardkv1-0:8000,shardkv1-1:8000,shardkv1-2:8000"
+      - "--ctrl-peers=shardctrler-0:8000,shardctrler-1:8000,shardctrler-2:8000"
+      - "--data=/data"
+    ports:
+      - "8102:8000"
+    volumes:
+      - ./data/kv1-2:/data
+  # ── ShardKV Group 2 ───────────────────────────────────────────────────────
+  shardkv2-0:
+      build: .
+      image: raftkv-shardkv
+      container_name: shardkv2-0
+      command:
+      - "/app/shardkvnode"
+      - "--gid=2"
+      - "--me=0"
+      - "--raft-peers=shardkv2-0:8000,shardkv2-1:8000,shardkv2-2:8000"
+      - "--ctrl-peers=shardctrler-0:8000,shardctrler-1:8000,shardctrler-2:8000"
+      - "--data=/data"
+      ports:
+      - "8200:8000"
+      volumes:
+      - ./data/kv2-0:/data
+  shardkv2-1:
+    build: .
+    image: raftkv-shardkv
+    container_name: shardkv2-1
+    command:
+      - "/app/shardkvnode"
+      - "--gid=2"
+      - "--me=1"
+      - "--raft-peers=shardkv2-0:8000,shardkv2-1:8000,shardkv2-2:8000"
+      - "--ctrl-peers=shardctrler-0:8000,shardctrler-1:8000,shardctrler-2:8000"
+      - "--data=/data/kv2-1"
+      - "--maxraftstate=1000"
+    ports:
+      - "8201:8000"
+    volumes:
+      - ./data/kv2-1:/data/kv2-1
+
+  shardkv2-2:
+    build: .
+    image: raftkv-shardkv
+    container_name: shardkv2-2
+    command:
+      - "/app/shardkvnode"
+      - "--gid=2"
+      - "--me=2"
+      - "--raft-peers=shardkv2-0:8000,shardkv2-1:8000,shardkv2-2:8000"
+      - "--ctrl-peers=shardctrler-0:8000,shardctrler-1:8000,shardctrler-2:8000"
+      - "--data=/data/kv2-2"
+      - "--maxraftstate=1000"
+    ports:
+      - "8202:8000"
+    volumes:
+      - ./data/kv2-2:/data/kv2-2
+  # ── CLI Clients ───────────────────────────────────────────────────────────
+  shardkv-client:
+    build: .
+    image: shardkv_client
+    container_name: shardkv-client
+#    command:
+#      - "/app/shardkv_client"
+#      - "--ctrl-peers=shardctrler-0:8000,shardctrler-1:8000,shardctrler-2:8000"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - shardctrler-0
+      - shardctrler-1
+      - shardctrler-2
+      - shardkv1-0
+      - shardkv1-1
+      - shardkv1-2
+  shardctrler-client:
+    build: .
+    image: shardctrler_client
+    container_name: shardctrler-client
+#    command:
+#      - "/app/shardctrler_client"
+#      - "--ctrl-peers=shardctrler-0:8000,shardctrler-1:8000,shardctrler-2:8000"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - shardctrler-0
+      - shardctrler-1
+      - shardctrler-2
