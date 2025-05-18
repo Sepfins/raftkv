@@ -49,8 +49,8 @@ The implementation has passed all tests from the **MIT 6.5840** testing suite, w
 
 ## How to Run
 ### Prerequisites
-- [Docker](link)
-- [Docker Compose](link)
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
 ### Build and Launch
 ```bash
 docker-compose up --build
