@@ -22,14 +22,8 @@ The system consists of:
 - **Shard Controller**: A centralized controller (also implemented using Raft) that manages assignment of shards to replica groups.
 - **ShardKV**: A fault-tolerant key-value store, serving disjoint subsets (shards) of the key space.
 
-ShardKV interaction with Raft can be depicted as follows:
-
-<object data="http://nil.csail.mit.edu/6.5840/2024/notes/raft_diagram.pdf" type="application/pdf" width="700px" height="700px">
-<embed src="http://nil.csail.mit.edu/6.5840/2024/notes/raft_diagram.pdf">
-<p>This browser does not support PDFs. Please download the PDF to view it: <a href="http://nil.csail.mit.edu/6.5840/2024/notes/raft_diagram.pdf">Download PDF</a>.</p>
-</embed>
-</object>
-
+Raft interactions can be visualized in the following diagram:
+![Diagram of Raft interactions](./images/raft.png)
 
 ### Sharding and Reconfiguration
 - The key space is divided into fixed shards (e.g., 10 shards), assigned to groups evenly to balance load.
